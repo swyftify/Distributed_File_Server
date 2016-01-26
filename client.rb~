@@ -18,9 +18,21 @@ loop do
 			end
 			puts "File received"
 		end
-    elsif(/LOAD \w/).match(user_input) != nil
-        puts "LOAD CALLED"
-
+	elsif(/LOAD \w/).match(user_input) != nil
+		puts "LOAD CALLED"
+		inputList = user_input.split(" ")
+		inputList.shift
+		path = inputList.shift
+		puts "#{path}"
+		File.open("ClientStore/#{path}", "r") do |file|
+	 		puts "PREPARED TO SEND"
+			while chunk = file.read(MTU)
+	        		puts "SEND CHUNK"
+			    	s.write(chunk)
+	        		puts "SENT CHUNK"
+	    		end
+			puts "File sent to server"
+		end
 	elsif (/WRITE \w/).match(user_input) != nil
 		inputList = user_input.split(" ")
 		inputList.shift
