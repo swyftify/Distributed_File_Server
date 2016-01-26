@@ -8,7 +8,6 @@ loop do
 	s = TCPSocket.open 'localhost', 2005
 	s.puts(user_input)
 	puts s.gets
-	sizeReceived = false
 	if(/READ \w/).match(user_input) != nil
 		inputList = user_input.split(" ")
 		inputList.shift
@@ -19,6 +18,21 @@ loop do
 			end
 			puts "File received"
 		end
+    elsif(/LOAD \w/).match(user_input) != nil
+        puts "LOAD CALLED"
+        inputList = user_input.split(" ")
+		inputList.shift
+		path = inputList.shift
+        puts "#{path}"
+        File.open("ClientStore/#{path}", "r") do |file|
+            puts "PREPARED TO SEND"
+		    while chunk = file.read(MTU)
+                puts "SEND CHUNK"
+			    s.write(chunk)
+                puts "SENT CHUNK"
+		    end
+		    puts "File sent to server"
+        end
 	elsif (/WRITE \w/).match(user_input) != nil
 		inputList = user_input.split(" ")
 		inputList.shift
@@ -32,7 +46,7 @@ loop do
 			file = File.open("ClientStore/#{path}", "a")
 			file.write("#{textToWrite}\n")
 			file.close
-		end	
+		end
 	end
 	s.close
 end

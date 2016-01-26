@@ -45,7 +45,20 @@ workers = (0...2).map do
 	
 					end
 				elsif(/LOAD \w/).match(input) != nil
-		
+                    puts "LOAD Command issued"
+					inputList = input.split(" ")
+					inputList.shift
+					path = inputList.shift
+                    puts "#{path}" 
+				    File.open("#{path}", "a") do |file|
+                        puts "Reading from client"
+						while chunk = client.read(MTU)
+                            puts "READING"
+							file.write(chunk)
+                            puts "WRITING"
+						end
+						puts "File updated"
+					end
 				end
 				client.close
 			end

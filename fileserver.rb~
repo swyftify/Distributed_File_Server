@@ -7,14 +7,6 @@ STUDENT_ID = "049fab2b9ed8146e9994a921f654febcdd3cd31c28b62db0020a0bbd889ff3f4"
 service_kill = false
 semaphore = Mutex.new
 
-/unless ARGV.length == 2
-	print "The correct number of arguments is 2!\n"
-	exit
-end
-
-ip = ARGV[1]
-port = ARGV[0]
-/
 server = TCPServer.new('localhost', 2005)
 client_queue = Queue.new
 
@@ -53,7 +45,22 @@ workers = (0...2).map do
 	
 					end
 				elsif(/LOAD \w/).match(input) != nil
-		
+                    puts "LOAD Command issued"
+					inputList = input.split(" ")
+					inputList.shift
+					path = inputList.shift
+                    puts "#{path}"
+				 #   File.delete("#{path}")
+                  #  puts "Deleted old file" 
+				    File.open("#{path}", "a") do |file|
+                        puts "Reading from client"
+						while chunk = client.read(MTU)
+                            puts "READING"
+							file.write(chunk)
+                            puts "WRITING"
+						end
+						puts "File updated"
+					end
 				end
 				client.close
 			end
