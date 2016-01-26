@@ -1,7 +1,7 @@
 require 'socket'
 require 'thread'
 
-SIZE = 1024 * 1024 * 10
+MTU = 1500
 
 STUDENT_ID = "049fab2b9ed8146e9994a921f654febcdd3cd31c28b62db0020a0bbd889ff3f4"
 service_kill = false
@@ -38,14 +38,15 @@ workers = (0...2).map do
 					if File.exist?("#{path}") == false
 						client.puts "No file or directory"
 					elsif File.exist?("#{path}") == true
-						client.puts "========= BEGIN ========="
+						client.puts "Sending file of size #{File.size("#{path}")} bytes"
 						File.open("#{path}", "r") do |f|
-							f.each_line do |line|
-								client.puts("#{line}")
+							while chunk = f.read(MTU)
+								client.write(chunk)
 							end
+							puts "Sent"
+
 						end
-						client.puts "========= END ========="
-						client.puts "#{File.size("#{path}")}"
+	
 					end
 				elsif(/WRITE \w/).match(input) != nil
 					inputList = input.split(" ")
