@@ -49,9 +49,7 @@ workers = (0...2).map do
 					inputList = input.split(" ")
 					inputList.shift
 					path = inputList.shift
-                    puts "#{path}"
-				 #   File.delete("#{path}")
-                  #  puts "Deleted old file" 
+                    puts "#{path}" 
 				    File.open("#{path}", "a") do |file|
                         puts "Reading from client"
 						while chunk = client.read(MTU)

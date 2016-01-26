@@ -7,7 +7,6 @@ loop do
 	user_input = gets.chomp  
 	s = TCPSocket.open 'localhost', 2005
 	s.puts(user_input)
-	puts s.gets
 	if(/READ \w/).match(user_input) != nil
 		inputList = user_input.split(" ")
 		inputList.shift
@@ -48,6 +47,7 @@ loop do
 			file.close
 		end
 	end
+	puts "ABOUT TO CLOSE"
 	s.close
 end
 s.close
