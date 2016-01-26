@@ -19,6 +19,20 @@ loop do
 			end
 			puts "File received"
 		end
+	elsif (/WRITE \w/).match(user_input) != nil
+		inputList = user_input.split(" ")
+		inputList.shift
+		path = inputList.shift
+		textToWrite = inputList.join(" ")
+		if File.exist?("ClientStore/#{path}") == false
+			file = File.new("ClientStore/#{path}", "a")
+			file.write("#{textToWrite}\n")
+			file.close
+		elsif File.exist?("ClientStore/#{path}") == true	
+			file = File.open("ClientStore/#{path}", "a")
+			file.write("#{textToWrite}\n")
+			file.close
+		end	
 	end
 	s.close
 end

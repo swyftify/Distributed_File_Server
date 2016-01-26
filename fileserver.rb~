@@ -31,14 +31,18 @@ workers = (0...2).map do
 		begin
 			while client = client_queue.pop()
 				input = client.gets
-				if(/READ \w/).match(input) != nil
+				if (/HELO \w/).match(input) != nil
+					client.puts "#{input}IP:#{ip}\nPort:#{port}\nStudentID:#{STUDENT_ID}\n"
+				elsif input == "KILL_SERVICE\n"
+					service_kill = true
+				elsif(/READ \w/).match(input) != nil
 					inputList = input.split(" ")
 					inputList.shift
 					path = inputList.shift
 					if File.exist?("#{path}") == false
 						client.puts "No file or directory"
 					elsif File.exist?("#{path}") == true
-						client.puts "#{File.size("#{path}")}"
+						client.puts "Sending file of size #{File.size("#{path}")} bytes"
 						File.open("#{path}", "r") do |f|
 							while chunk = f.read(MTU)
 								client.write(chunk)
@@ -48,20 +52,8 @@ workers = (0...2).map do
 						end
 	
 					end
-				elsif(/WRITE \w/).match(input) != nil
-					inputList = input.split(" ")
-					inputList.shift
-					path = inputList.shift
-					textToWrite = inputList.join(" ")
-					if File.exist?("#{path}") == false
-						file = File.new("#{path}", "a")
-						file.write("#{textToWrite}\n")
-						file.close
-					elsif File.exist?("#{path}") == true
-						file = File.open("#{path}", "a")
-						file.write("#{textToWrite}\n")
-						file.close
-					end
+				elsif(/LOAD \w/).match(input) != nil
+		
 				end
 				client.close
 			end
