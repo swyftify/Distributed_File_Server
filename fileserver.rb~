@@ -34,7 +34,6 @@ workers = (0...2).map do
 					if File.exist?("#{path}") == false
 						client.puts "No file or directory"
 					elsif File.exist?("#{path}") == true
-						client.puts "Sending file of size #{File.size("#{path}")} bytes"
 						File.open("#{path}", "r") do |f|
 							while chunk = f.read(MTU)
 								client.write(chunk)
