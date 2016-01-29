@@ -36,6 +36,7 @@ loop do
 			when /2/
 				puts "USERNAME:"
 				username = STDIN.gets.chomp
+				$encryptedClientNameSession = Base64.encode64(username)
 				puts "PASSWORD:"
 				password = STDIN.noecho(&:gets).chomp
 				encrypted_pw = Digest::SHA256.digest password
@@ -115,8 +116,10 @@ loop do
 				file.write("#{textToWrite}\n")
 				file.close
 			end
-		elsif (/LOGOUT \w/).match(user_input) != nil
+		elsif user_input.include? "LOGOUT" or user_input.include? "EXIT"
 			authServiceSock = TCPSocket.open 'localhost', 2006
+			decodedSessionName = Base64.decode64($encryptedClientNameSession)
+			msg = "LOGOUT " + "#{decodedSessionName}"
 			encryptedLogout = Base64.encode64($public_key.public_encrypt(user_input))
 			authServiceSock.print("LOGOUT #{encryptedLogout}")
 			status = authServiceSock.gets()
@@ -127,7 +130,13 @@ loop do
 				when /true/
 					puts "ERROR: Something went wrong during logout"
 			end
-			
+			if user_input.include? "EXIT"
+				puts "Closing session"
+				s.close
+				authServiceSock.close
+				puts "See you soon..."
+				exit(true)
+			end
 		end
 		authServiceSock.close
 		s.close
