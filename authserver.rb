@@ -43,8 +43,6 @@ class AUTH_BASE
 	end
 end
 
-##################################### REGISTRY METHODS ###############################################################
-
 def register( input )
 	inputList = input.split(" ")
 	inputList.shift
@@ -84,8 +82,6 @@ def logout(input)
 	joinID = username.hash
 	state = $authbase.logout(joinID, username)
 end
-
-########################################### SERVER MAIN ##############################################################
 
 $public_key = OpenSSL::PKey::RSA.new(File.read("public_key.pem"))
 password = 'zeroday'

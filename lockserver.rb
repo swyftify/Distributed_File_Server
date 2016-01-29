@@ -29,8 +29,6 @@ class LOCK
 	end
 end
 
-#############################################################################################
-
 def request (input)
 	inputList = input.split(" ")
 	inputList.shift
@@ -56,8 +54,6 @@ def release (input)
 	filepath = requestList.shift
 	$lock_base.releaseLock(filepath.to_i)
 end
-
-###########################################################################################
 
 password = 'zeroday'
 $private_key = OpenSSL::PKey::RSA.new(File.read("private_key.pem"), password)

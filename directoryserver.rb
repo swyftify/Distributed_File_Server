@@ -40,23 +40,30 @@ class DIRECTORY
 	end
 end
 
-##########################################################################################
+def shiftArray(arraylist, n)
+	if n == 1
+		arraylist.shift
+	end
+	count = 0
+	while count < n
+		arraylist.shift
+		count+=1
+	end 
+	arraylist
+end
 
 def addEntry(input)
 	inputList = input.split(" ")
 	inputList.shift
 	encodedData = inputList.join("")
 	request = $private_key.private_decrypt(Base64.decode64(encodedData))
-	puts "#{request}"
 	decodedList = request.split(" ")
-	decodedList.shift				# remove add
-	decodedList.shift
+	shiftArray(decodedList, 2)
 	serverIP = decodedList.shift
 	decodedList.shift
 	serverPort = decodedList.shift
 	decodedList.shift
 	filepath = decodedList.shift
-	puts "#{clientIP}	#{clientPort}	#{filepath}"
 	$directoryBase.setFileLocation(serverIP, serverPort, filepath, filepath.to_i)
 end
 
@@ -65,27 +72,12 @@ def getEntry(input)
 	inputList.shift
 	encodedData = inputList.join("")
 	request = $private_key.private_decrypt(Base64.decode64(encodedData))
-	puts "#{request}"
 	filepath = request.split(" ")
 	filepath.shift		
 	address = $directoryBase.getAddress( filepath.to_i )
 	port = $directoryBase.getPort( filepath.to_i )
 	file = $directoryBase.getFileLocation( filepath.to_i ) 
-	puts "#{file}, #{address}, #{port}"
 end
-
-def get (encrypted_request)
-	remove_GET = encrypted_request.split("GET")[1].strip()
-	request = $private_key.private_decrypt(Base64.decode64(remove_GET))
-	puts "#{request}"
-	parse = request.split("GET")[1].strip()
-	file = $directoryBase.getFileLocation( parse.to_i ) 
-	address = $directoryBase.getAddress( parse.to_i )
-	port = $directoryBase.getPort( parse.to_i )
-	puts "#{file}, #{address}, #{port}"
-end
-
-###########################################################################################
 
 password = 'zeroday'
 $private_key = OpenSSL::PKey::RSA.new(File.read("private_key.pem"), password)

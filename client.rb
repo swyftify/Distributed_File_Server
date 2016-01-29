@@ -58,7 +58,6 @@ loop do
 				exit(true)
 		end
 	end
-
 	while loggedIn == true do
 		puts "Awaiting input"
 		user_input = gets.chomp  
@@ -137,6 +136,8 @@ loop do
 				puts "See you soon..."
 				exit(true)
 			end
+		else 
+			puts "ERROR: Invalid option"
 		end
 		authServiceSock.close
 		s.close
