@@ -44,7 +44,6 @@ def request (input)
 		$lock_base.setLock(filepath.to_i)
 		state = $lock_base.lockedRequest(filepath.to_i)
 	end
-
 end
 
 def release (input)

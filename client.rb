@@ -116,6 +116,7 @@ while loggedIn == true do
 			file.write("#{textToWrite}\n")
 			file.close
 		end
+	
 	end
 	s.close
 end

@@ -8,7 +8,6 @@ MTU = 1500
 STUDENT_ID = "049fab2b9ed8146e9994a921f654febcdd3cd31c28b62db0020a0bbd889ff3f4"
 service_kill = false
 $public_key = OpenSSL::PKey::RSA.new(File.read("public_key.pem"))
-
 server = TCPServer.new('localhost', 2005)
 client_queue = Queue.new
 
@@ -33,6 +32,10 @@ workers = (0...2).map do
 					inputList = input.split(" ")
 					inputList.shift
 					path = inputList.shift
+					dirSocket = TCPSocket.open('localhost', 2008)
+					directoryRequest = "GET #{path}"
+					encryptedDirRequest = Base64.encode64($public_key.public_encrypt(directoryRequest))
+					dirSocket.print("GET #{encryptedDirRequest}\n")
 					if File.exist?("#{path}") == false
 							puts "No file #{path} exists"
 							client.puts(false)
@@ -48,7 +51,6 @@ workers = (0...2).map do
 								client.write(chunk)
 							end
 							puts "Sent"
-
 						end
 						lock_socket = TCPSocket.open('localhost', 2007)
 						message_lock = "RELEASE #{path}"
@@ -86,7 +88,12 @@ workers = (0...2).map do
 					message_lock = "RELEASE #{path}"
 					encrypted_string = Base64.encode64($public_key.public_encrypt(message_lock))
 					lock_socket.print("RELEASE #{encrypted_string}")
+					dirSocket = TCPSocket.open('localhost', 2008)
+					directoryRequest = "ADD IP: localhost " + "PORT: 2008 " + "FILE: " + "#{path}"
+					encryptedDirRequest = Base64.encode64($public_key.public_encrypt(directoryRequest))	
+					dirSocket.print("ADD #{encryptedDirRequest}")
 				end
+				dirSocket.close
 				lock_socket.close
 				client.close
 			end
@@ -96,7 +103,3 @@ end
 
 while !service_kill
 end
-
-
-
-
