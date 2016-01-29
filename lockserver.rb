@@ -55,6 +55,7 @@ def release (input)
 	$lock_base.releaseLock(filepath.to_i)
 end
 
+service_kill = false
 password = 'zeroday'
 $private_key = OpenSSL::PKey::RSA.new(File.read("private_key.pem"), password)
 $lock_base = LOCK.new
@@ -77,6 +78,10 @@ workers = (0...2).map do
 				input = ""
 				while !input.include? "==" do
 		  			message = client.gets()
+		  			if message == "KILL_SERVICE"
+		  				input = message
+		  				break
+		  			end
 					input << message
 				end
 				if (/REQUEST \w/).match(input) != nil
@@ -86,6 +91,8 @@ workers = (0...2).map do
 					release(input)
 					status = "RELEASED"
 					client.puts(status)
+				elsif input.include? "KILL_SERVICE"
+					service_kill = true
 				end
 				client.close
 			end
@@ -93,6 +100,6 @@ workers = (0...2).map do
 	end
 end
 
-while true
+while !service_kill
 end
 

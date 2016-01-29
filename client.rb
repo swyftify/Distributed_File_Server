@@ -89,7 +89,6 @@ loop do
 						puts "File received"
 					end
 				end
-			
 			end
 		elsif(/LOAD \w/).match(user_input) != nil
 			inputList = user_input.split(" ")
@@ -136,6 +135,10 @@ loop do
 				puts "See you soon..."
 				exit(true)
 			end
+		elsif user_input.include? "KILL_SERVICE"
+			s.print("KILL_SERVICE")
+			s.close
+			exit(true)
 		else 
 			puts "ERROR: Invalid option"
 		end

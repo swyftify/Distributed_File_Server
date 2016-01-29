@@ -26,7 +26,13 @@ workers = (0...2).map do
 				input = client.gets
 				if (/HELO \w/).match(input) != nil
 					client.puts "#{input}IP:#{ip}\nPort:#{port}\nStudentID:#{STUDENT_ID}\n"
-				elsif input == "KILL_SERVICE\n"
+				elsif input == "KILL_SERVICE\n"	
+					authServiceSock = TCPSocket.open 'localhost', 2006
+					authServiceSock.print("KILL_SERVICE")
+					dirSocket = TCPSocket.open('localhost', 2008)
+					dirSocket.print("KILL_SERVICE")
+					lock_socket = TCPSocket.open('localhost', 2007)
+					lock_socket.print("KILL_SERVICE")
 					service_kill = true
 				elsif(/READ \w/).match(input) != nil
 					inputList = input.split(" ")
@@ -93,6 +99,7 @@ workers = (0...2).map do
 					encryptedDirRequest = Base64.encode64($public_key.public_encrypt(directoryRequest))	
 					dirSocket.print("ADD #{encryptedDirRequest}")
 				end
+				authServiceSock.close
 				dirSocket.close
 				lock_socket.close
 				client.close

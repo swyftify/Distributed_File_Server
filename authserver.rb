@@ -83,6 +83,7 @@ def logout(input)
 	state = $authbase.logout(joinID, username)
 end
 
+service_kill = false
 $public_key = OpenSSL::PKey::RSA.new(File.read("public_key.pem"))
 password = 'zeroday'
 $private_key = OpenSSL::PKey::RSA.new(File.read("private_key.pem"), password)
@@ -105,6 +106,10 @@ workers = (0...2).map do
 				input = ""
 				while !input.include? "==" do
 		  			message = client.gets()
+		  			if message == "KILL_SERVICE"
+		  				input = message
+		  				break
+		  			end
 					input << message
 				end
 				if (/REGISTER \w/).match(input) != nil
@@ -116,6 +121,8 @@ workers = (0...2).map do
 				elsif (/LOGOUT \w/).match(input) != nil
 					state = logout(input)
 					client.puts(state)
+				elsif input.include? "KILL_SERVICE"
+					service_kill = true
 				end
 				client.close
 			end
@@ -123,10 +130,5 @@ workers = (0...2).map do
 	end
 end
 
-while true
+while !service_kill
 end
-
-
-
-
-
